@@ -1,19 +1,99 @@
 <template>
-  <div>
-    <header>
-      <img src="http://www.lifesaving.org.nz/media/134123/slsnr_logov3.jpg" alt="">
-      <h1>Be safe in the sun this summer - Surf Life Saving Northern Region</h1>
-    </header>
-    <div class="hero"></div>
-    <div class="beacon">
-      <h2>Todays Conditions</h2>
-      <div class="uvindex">
-        UV Index:
-        9 - Very High
-      </div>
-      <p>Remember to apply sunblock regularly</p>
-      <div class="waves"><svg width="90" height="17" viewBox="0 0 90 17" xmlns="http://www.w3.org/2000/svg"><title>Artboard</title><g fill="none" fill-rule="evenodd"><g fill-rule="nonzero"><path fill="#000" d="M.5 0H14v10H1v7H0V0"/><path fill="#E31F26" d="M1 1h12v4H1"/><path fill="#FFD900" d="M1 5h12v4H1"/></g><g fill-rule="nonzero"><path fill="#000" d="M76.5 0H90v10H77v7h-1V0"/><path fill="#E31F26" d="M77 1h12v4H77"/><path fill="#FFD900" d="M77 5h12v4H77"/></g><path d="M22 5s3.235 6 11 6c7.765 0 12-6 12-6s4 6 11 6 12-6 12-6" stroke="#006BB6" stroke-width="2" stroke-linecap="square"/></g></svg></div>
-		<p>Only swim between the flags</p>
-    </div>
+  <div class="container">
+    <h4>Beach report for Omaha Beach</h4>
+    <!-- SECTION 1 - Quick visual information -->
+    <ul class="collection">
+      <li class="collection-item">
+        <div class="row">
+          <div class="col s3">
+            <i class="material-icons medium green-text sm3">pool</i>
+          </div>
+          <div class="col s9">
+            <p>Always remember to swim between the flags</p>
+          </div>
+        </div>
+      </li>
+      <li class="collection-item">
+        <div class="row">
+          <div class="col s3">
+            <i class="material-icons medium green-text">invert_colors</i>
+          </div>
+          <div class="col s9">
+            <p>Water Quality:
+              {{ waterRisk }}
+            </p>
+          </div>
+        </div> 
+      </li>
+      <li class="collection-item">
+        <div class="row">
+          <div class="col s3">
+            <i class="material-icons medium yellow-text">brightness_high</i>
+          </div>
+          <div class="col s9">
+            <p>UV Burntime</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <!-- SECTION 2 - General Info -->
+    <ul class="collection">
+      <li class="collection-item">
+        <div class="row">
+          <div class="col s3">
+            <i class="material-icons medium green-text sm3">flag</i>
+          </div>
+          <div class="col s9">
+            <p>Patrol hours:
+              10:30 am - 06:30pm
+            </p>
+          </div>
+        </div>
+      </li>
+      <li class="collection-item">
+        <div class="row">
+          <div class="col s3">
+            <i class="material-icons medium green-text">brightness_2</i>
+          </div>
+          <div class="col s9">
+            <p>High Tides:
+              {{ highTides[0] }}, {{ highTides[1] }}
+            </p>
+          </div>
+        </div> 
+      </li>
+    </ul>
+    <p>{{ surfData[0] }}</p>
   </div>
 </template>
+
+<script>
+import db from './firebaseInit'
+export default {
+  data () {
+    return {
+      surfData: [],
+      waterRisk: 'Low Risk',
+      highTides: ['10:30am', '10:43pm']
+    }
+  },
+  created () {
+    db.collection('omaha').get()
+      .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          const data = {
+            dt: doc.data().dt,
+            description: doc.data().description,
+            humidity: doc.data().humidity,
+            pressure: doc.data().pressure,
+            temp: doc.data().temp,
+            windAngle: doc.data().windAngle,
+            windSpeed: doc.data().windSpeed
+          }
+          this.surfData.push(data)
+        })
+      })
+  }
+}
+</script>
+
